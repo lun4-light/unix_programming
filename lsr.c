@@ -39,7 +39,8 @@ void ls(char* fileName, char* nameString) {
 		stat(dent->d_name, &buf);
 
 		if (buf.st_mode & S_IFDIR) {
-			char* before = nameString;
+			char* before = malloc(strlen(nameString) + 4);
+			strcpy(before, nameString);
 			strcat(nameString, "/");
 			ls(dent->d_name, nameString);
 			strcpy(nameString, before);
