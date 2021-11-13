@@ -39,8 +39,10 @@ void ls(char* fileName, char* nameString) {
 		stat(dent->d_name, &buf);
 
 		if (buf.st_mode & S_IFDIR) {
+			char* before = nameString;
 			strcat(nameString, "/");
 			ls(dent->d_name, nameString);
+			strcpy(nameString, before);
 		}
 	}
 
@@ -53,5 +55,7 @@ int main(int argc, char* argv[]) {
 	strcpy(nameString, "");
 	ls(fn, nameString);
 
+
+	free(nameString);
 	return 0;
 }
