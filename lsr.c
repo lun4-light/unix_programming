@@ -10,16 +10,15 @@
 void ls(char* fileName, char* nameString) {
 	DIR* dp;
 	struct dirent* dent;
-	struct stat buf;
-
-	if ((dp = opendir(fileName)) == NULL) {
-		perror("opendir");
-		exit(1);
-	}
 
 	strcat(nameString, fileName);
 
 	printf("%s:\n\n", nameString);
+
+	if ((dp = opendir(nameString)) == NULL) {
+		perror("opendir");
+		exit(1);
+	}
 
 	while ((dent = readdir(dp))) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
@@ -32,20 +31,31 @@ void ls(char* fileName, char* nameString) {
 		
 	rewinddir(dp);
 
+	printf(" -- if file is a directory -- \n\n");
+
 	while ((dent = readdir(dp))) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
 			continue;
 
+		struct stat buf;
+
 		stat(dent->d_name, &buf);
 
 		if (buf.st_mode & S_IFDIR) {
+			printf("this file is a folder -- %s\n\n", dent->d_name);
+
 			char* before = malloc(strlen(nameString) + 4);
 			strcpy(before, nameString);
 			strcat(nameString, "/");
 			ls(dent->d_name, nameString);
 			strcpy(nameString, before);
 		}
+		else {
+			printf("this file is NOT a folder -- %s\n\n", dent->d_name);
+		}
 	}
+
+	printf("-- directory find end -- \n\n");
 
 	closedir(dp);
 }
