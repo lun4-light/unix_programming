@@ -16,9 +16,7 @@ void ls(char* fileName, char* nameString) {
 		exit(1);
 	}
 
-	strcat(nameString, fileName);
-
-	printf("%s:\n\n", nameString);
+	chdir(fileName);
 
 	chdir(filename);
 
@@ -39,9 +37,12 @@ void ls(char* fileName, char* nameString) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
 			continue;
 
+		struct stat buf;
+
 		stat(dent->d_name, &buf);
 
 		if (buf.st_mode & S_IFDIR) {
+			printf("\n\n");
 			char* before = malloc(strlen(nameString) + 4);
 			strcpy(before, nameString);
 			strcat(nameString, "/");
@@ -50,6 +51,7 @@ void ls(char* fileName, char* nameString) {
 			
 			strcpy(nameString, before);
 			free(before);
+			
 		}
 	}
 
