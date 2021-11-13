@@ -7,16 +7,19 @@
 #include <stdio.h>
 #include <string.h>
 
-void ls(char* fileName) {
+void ls(char* fileName, char* nameString) {
 	DIR* dp;
 	struct dirent* dent;
+	struct stat buf;
 
 	if ((dp = opendir(fileName)) == NULL) {
 		perror("opendir");
 		exit(1);
 	}
 
-	printf("%s:\n\n", fileName);
+	strcat(nameString, fileName);
+
+	printf("%s:\n\n", nameString);
 
 	while ((dent = readdir(dp))) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
@@ -36,9 +39,9 @@ void ls(char* fileName) {
 		stat(dent->d_name, &buf);
 
 		if (buf.st_mode & S_IFDIR) {
-			ls(dent->d_name);
+			strcat(nameString, "/");
+			ls(dent->d_name, nameString);
 		}
-
 	}
 
 	closedir(dp);
@@ -46,7 +49,9 @@ void ls(char* fileName) {
 
 int main(int argc, char* argv[]) {
 	char* fn = ".";
-	ls(fn);
+	char* nameString = malloc(sizeof(char) * 1000);
+	strcpy(nameString, "");
+	ls(fn, nameString);
 
 	return 0;
 }
