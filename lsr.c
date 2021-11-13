@@ -10,7 +10,6 @@
 void ls(char* fileName, char* nameString) {
 	DIR* dp;
 	struct dirent* dent;
-	struct stat buf;
 
 	if ((dp = opendir(fileName)) == NULL) {
 		perror("opendir");
@@ -21,6 +20,8 @@ void ls(char* fileName, char* nameString) {
 
 	printf("%s:\n\n", nameString);
 
+	chdir(filename);
+
 	while ((dent = readdir(dp))) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
 			continue;
@@ -28,11 +29,13 @@ void ls(char* fileName, char* nameString) {
 		printf("%s ", dent->d_name);
 	}
 
-	printf("\n\n");
+	printf("\n");
 		
 	rewinddir(dp);
 
 	while ((dent = readdir(dp))) {
+		struct stat buf;
+
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
 			continue;
 
@@ -42,21 +45,35 @@ void ls(char* fileName, char* nameString) {
 			char* before = malloc(strlen(nameString) + 4);
 			strcpy(before, nameString);
 			strcat(nameString, "/");
+
 			ls(dent->d_name, nameString);
+			
 			strcpy(nameString, before);
+			free(before);
 		}
 	}
+
+	chdir("..");
 
 	closedir(dp);
 }
 
 int main(int argc, char* argv[]) {
-	char* fn = ".";
+	char* fn;
 	char* nameString = malloc(sizeof(char) * 1000);
 	strcpy(nameString, "");
-	ls(fn, nameString);
-
-
+	if (argc > 1){
+		for (int i = 1; i < argc; i++){
+			fn = argv[i];
+			ls(fn, nameString);
+			strcpy(nameString, "");
+		}
+	}
+	else {
+		fn = ".";
+		ls(fn, nameString);
+	}
+	
 	free(nameString);
 	return 0;
 }
