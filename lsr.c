@@ -11,14 +11,16 @@ void ls(char* fileName, char* nameString) {
 	DIR* dp;
 	struct dirent* dent;
 
+	strcat(nameString, fileName);
+
+	printf("%s:\n\n", nameString);
+
 	if ((dp = opendir(fileName)) == NULL) {
 		perror("opendir");
 		exit(1);
 	}
 
 	chdir(fileName);
-
-	chdir(filename);
 
 	while ((dent = readdir(dp))) {
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
@@ -32,8 +34,6 @@ void ls(char* fileName, char* nameString) {
 	rewinddir(dp);
 
 	while ((dent = readdir(dp))) {
-		struct stat buf;
-
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
 			continue;
 
