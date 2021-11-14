@@ -35,8 +35,6 @@ void ls(char* fileName, char* nameString) {
 	rewinddir(dp);							// set directory pointer to front
 
 	while ((dent = readdir(dp))) {			// read files in directory again
-		struct stat buf;
-
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)	// skip when d_name is '.', '..'
 			continue;
 
@@ -68,11 +66,17 @@ int main(int argc, char* argv[]) {
 	struct stat buf;								// file stat -> buf
 	strcpy(nameString, ""); 						// reset nameString
 	if (argc > 1){									// if program get arguments, repeat ls by the argument's number.
-		for (int i = 1; i < argc; i++){				
+		for (int i = 1; i < argc; i++){
 			fn = argv[i];							// save arguments in fn
 			
 			if (stat(fn, &buf) == -1) {				// get fn's stat, if error occurs, print error and go to front of loop.
-				perror("stat fileName");			
+				/* make error message */
+				char* tmp = malloc(sizeof(char) * 200);
+				strcpy(tmp, "ls: cannot access '");
+				strcat(tmp, fn);
+				strcat(tmp, "'");
+				perror(tmp);
+				free(tmp);
 				continue;
 			}			
 
