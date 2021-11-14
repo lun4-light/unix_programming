@@ -12,34 +12,19 @@ void ls(char* fileName, char* nameString) {
 	DIR* dp;
 	struct dirent* dent;
 
-<<<<<<< HEAD
 	strcat(nameString, fileName); 			// add filename to nameString
 
 	printf("%s:\n\n", nameString);			// print current location
 
 	if ((dp = opendir(fileName)) == NULL) {	// if opendir fail, error return
-=======
-	strcat(nameString, fileName);
-
-	printf("%s:\n\n", nameString);
-
-	if ((dp = opendir(fileName)) == NULL) {
->>>>>>> 328a33eb720ac023702bcc245260914f3d79be2a
 		perror("opendir");
 		exit(1);
 	}
 
-<<<<<<< HEAD
 	chdir(fileName);						// change dir(filename)
 
 	while ((dent = readdir(dp))) {			// read files in directory
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0) 	// skip print when d_name is '.', '..'
-=======
-	chdir(fileName);
-
-	while ((dent = readdir(dp))) {
-		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
->>>>>>> 328a33eb720ac023702bcc245260914f3d79be2a
 			continue;
 
 		printf("%s ", dent->d_name);											// print directory name
@@ -49,15 +34,10 @@ void ls(char* fileName, char* nameString) {
 		
 	rewinddir(dp);							// set directory pointer to front
 
-<<<<<<< HEAD
 	while ((dent = readdir(dp))) {			// read files in directory again
 		struct stat buf;
 
 		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)	// skip when d_name is '.', '..'
-=======
-	while ((dent = readdir(dp))) {
-		if (strcmp(".", dent->d_name) == 0 || strcmp("..", dent->d_name) == 0)
->>>>>>> 328a33eb720ac023702bcc245260914f3d79be2a
 			continue;
 
 		struct stat buf;					// file stat -> buf
