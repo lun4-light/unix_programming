@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[]) {
     int fd;
+    pid_t pid;
     caddr_t addr;
     struct stat buf;
     
@@ -29,19 +30,27 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    /* mapping memory. if it fail, exit */
+    /* mapping memory. if it fail, exit */        
     addr = mmap(NULL, buf.st_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, (off_t)0);
 
-    if (addr == MAP_FAILED) {
+   if (addr == MAP_FAILED) {
         perror("mmap");
         exit(1);
     }
 
-    /* file close */
-    close(fd);
-
-    /* print mapped memory */
-    printf("%s", addr);
+    switch(pid = fork()) {
+        case -1: /* fork failed */
+            perror("fork");
+            exit(1);
+            break;
+        case 0:  /* child process, print */
+            printf("%s", addr);
+            break;
+        default: /* parent process */
+            /* file close */
+            close(fd);
+            break;
+    }
 
     return 0;
 }
