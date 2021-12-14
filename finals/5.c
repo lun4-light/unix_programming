@@ -1,29 +1,30 @@
 #include <stdio.h>
-#include <signal.h>
+#include <stdlib.h>
+#include <sys/signal.h>
 
 void handler (int signo) {
-    exit(1);
+    return;
 }
 
 int main(void) {
     short i = 0;
     struct sigaction act;
 
-    sigemtpyset(&act.sa_mask);
+    sigemptyset(&act.sa_mask);
+    sigaddset(&act.sa_mask, SIGQUIT);
 
     act.sa_flags = 0;
     act.sa_handler = handler;
-
-    if (sigaction(SIGQUIT, &act, (struct sigaction *)NULL) < 0) {
+    
+    if (sigaction(SIGINT, &act, (struct sigaction *)NULL) < 0) {
         perror("sigaction");
         exit(1);
     }
 
     while(1) {
-        if (i < 0){ 
+        if (i < 0)
             i = 0;
-            printf("%d\r", i++);
-        }
+        printf("%d\r", i++);
     }
 
     return 0;

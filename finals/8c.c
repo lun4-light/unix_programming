@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define PORT 9000
 #define LENGTH 256
 
 int main(int argc, char* argv[]) {
     int sd;
-    char buf[LENGTH];
+    char buf[LENGTH] = "";
 
     struct sockaddr_in sin;
 
@@ -20,8 +23,8 @@ int main(int argc, char* argv[]) {
     }
 
     for (int i = 1 ; i < argc ; i++) {
-        strcat(&buf, argv[i]);
-        strcat(&buf, " ");
+        strcat(buf, argv[i]);
+        strcat(buf, " ");
     }
 
     memset((char *)&sin, '\0', sizeof(sin));
@@ -38,6 +41,8 @@ int main(int argc, char* argv[]) {
         perror("connect");
         exit(1);
     }
+
+    printf("To Server : %s\n", buf);
 
     if (send(sd, buf, sizeof(buf) + 1, 0) == -1) {
         perror("send");

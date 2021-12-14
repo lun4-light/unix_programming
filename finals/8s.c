@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #define PORT 9000
 #define LENGTH 256
@@ -41,13 +44,13 @@ int main(void) {
             exit(1);
         }
 
-        if ((getmsglen = recv(ns, buf, LENGTH, 0) == -1) {
+        if ((getmsglen = recv(ns, buf, LENGTH, 0)) == -1) {
             perror("recv");
             exit(1);
         } 
 
         for (int i = 0; i < getmsglen ; i++) {
-            if ((buf[i] - 'A' >= 0 && buf[i] - 'A' < 26)
+            if (buf[i] - 'A' >= 0 && buf[i] - 'A' < 26)
                 buf[i] = buf[i] + 32;
             else if (buf[i] - 'a' >= 0 && buf[i] - 'a' < 26)
                 buf[i] = buf[i] - 32;
