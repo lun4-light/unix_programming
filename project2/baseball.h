@@ -8,6 +8,7 @@
 
 int attack(int opponent) {
     int gameChecker = 1, turnCounter = 0;
+    int balls[4];
     char buf[256];
     printf("=== ATTACK ===\n");
     printf("Wait for Defence input balls . . . \n");
@@ -16,24 +17,18 @@ int attack(int opponent) {
         turnCounter++;
         printf("Turn #%d . . .\n", turnCounter); 
 
-        memset(buf, '\0', sizeof(buf));
-
-        if (recv(opponent, buf, strlen(buf), 0) == -1) {
-            perror("recv");
-            exit(1);
-        }
-        
-        memset(buf, '\0', sizeof(buf));
-
         printf("Guess opponent player's balls . . .\n");
 
         for (int i = 0 ; i < 4; i++) {
-            printf("BALL #%d ==> ", i);
-            scanf("%c", buf[i]);
+            printf("BALL #%d ==> ", i + 1);
+            scanf("%d", &balls[i]);
+            getchar();
         }
 
+        sprintf(buf, "%d%d%d%d", balls[0], balls[1], balls[2], balls[3]);
+
         if (send(opponent, buf, strlen(buf) + 1, 0) == -1) {
-            perror(send);
+            perror("send");
             exit(1);
         }
 
@@ -47,7 +42,7 @@ int attack(int opponent) {
             gameChecker = 0;
         }
         else {
-            printf("You get %d Strikes, %d Balls, and %d outs.\n",buf[0] - '0', buf[1] - '0', buf[2] - '0');
+            printf("You get %c Strikes, %c Balls, and %c outs.\n", buf[0], buf[1], buf[2]);
         }
     }
 
@@ -61,29 +56,29 @@ int defence(int opponent) {
     printf("Input your balls. . .\n");
 
     for (int i = 0 ; i < 4 ; i++) {
-        printf("BALL #%d ==> ", i);
-        scanf("%d ", &playerBalls[i]);
-    }
-
-    strcpy(buf, "continue");
-
-    if (send(opponent, buf, strlen(buf) + 1, 0) == -1){
-        perror("send");
-        exit(1);
+        printf("BALL #%d ==> ", i + 1);
+        scanf("%d", &playerBalls[i]);
+        getchar();
     }
 
     while (gameChecker || turnCounter < 10) {
         turnCounter++;
         printf("Turn #%d . . . waiting opponent player.\n", turnCounter);
         int ball = 0, strike = 0, out = 4;
+
         if (recv(opponent, buf, strlen(buf), 0) == -1){
             perror("recv");
             exit(1);
         }
 
+        printf("%s\n", buf);
+
         for (int i = 0 ; i < 4 ; i++) {
             opponentBalls[i] = buf[i] - '0';
+            printf("%d", opponentBalls[i]);
         }
+
+        printf("\n");
 
         for (int i = 0 ; i < 4 ; i++) {
             for (int j = 0 ; j < 4; j++) {
@@ -102,14 +97,10 @@ int defence(int opponent) {
             gameChecker = 0;
         }
         else
-            printf("Opponent player gets %d Strikes, %d Balls, and %d outs.\n", buf[0] - '0', buf[1] - '0', buf[2] - '0');
+            printf("Opponent player gets %d Strikes, %d Balls, and %d outs.\n", strike, ball, out);
 
-        memset(buf, '\0', sizeof(buf));
-
-        buf[0] = strike - '0';
-        buf[1] = ball - '0';
-        buf[2] = out - '0';
-
+        sprintf(buf, "%d%d%d", strike, ball, out);
+        
         if (send(opponent, buf, strlen(buf) + 1, 0) == -1) {
             perror("send");
             exit(1);

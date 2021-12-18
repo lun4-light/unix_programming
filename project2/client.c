@@ -5,8 +5,8 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <port.h>
-#include <baseball.h>
+#include "port.h"
+#include "baseball.h"
 
 char* fileName = "client";
 
@@ -35,13 +35,14 @@ int main(int argc, char* argv[]) {
     }
 
     printf("=== Server connecting is success on PORT %d ===\n",portNum);
-    printf("=== Server owner is selection position ===\n");
-    memset(buf, '\0', sizeof(buf));
+    printf("=== Server owner is selecting position ===\n");
 
     if (recv(sd, buf, strlen(buf), 0) == -1) {
         perror("recv");
         exit(1);
     }
+
+    printf("buf : %s \n", buf);
 
     if (buf[0] - '0' == 1) {
         position = 2;

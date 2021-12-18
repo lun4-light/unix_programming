@@ -4,7 +4,7 @@
 
 int port(int argc, char* argv[], char* fn) {
     if (argc != 2) {
-        printf("Usage : ./%s PORTNUM", fn);
+        printf("Usage : ./%s PORTNUM\n", fn);
         return -1;
     }
 
