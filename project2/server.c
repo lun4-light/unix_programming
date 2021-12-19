@@ -14,7 +14,7 @@ char* fileName = "server";
 int main(int argc, char* argv[]) {
     struct sockaddr_in sin, cli;
     int portNum, sd, ns, position, gameStatus, clientlen = sizeof(cli);
-    char pos[10];
+    char pos[256];
 
     if ((portNum = port(argc, argv, fileName)) == -1){
         return 0;
@@ -50,10 +50,11 @@ int main(int argc, char* argv[]) {
 
         switch(fork()) {
             case 0:
+                close(sd);
                 while (1) {
                     printf("=== Choice attack or defence === (attack : 1, defence : 2) : ");
                     scanf("%d", &position);
-                    getchar();
+                    while (getchar() != '\n');
 
                     if (position > 0 && position < 3)
                         break;
@@ -63,12 +64,10 @@ int main(int argc, char* argv[]) {
                 
                 sprintf(pos, "%d", position);
 
-                printf("%s \n", pos);
-
                 if (send(ns, pos, strlen(pos) + 1, 0) == -1) {
                     perror("send");
                     exit(1);
-                }            
+                }
 
                 gameStatus = 1;
 
@@ -84,6 +83,8 @@ int main(int argc, char* argv[]) {
                 }
                 break;
         }
+
+        close(ns);
     }
 
     return 0;

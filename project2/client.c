@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -13,7 +14,7 @@ char* fileName = "client";
 int main(int argc, char* argv[]) {
     struct sockaddr_in sin;
     int portNum, sd, position, gameStatus = 1;
-    char buf[256];
+    char pos[256];
 
     if ((portNum = port(argc, argv, fileName)) == -1){
         return 0;
@@ -37,14 +38,14 @@ int main(int argc, char* argv[]) {
     printf("=== Server connecting is success on PORT %d ===\n",portNum);
     printf("=== Server owner is selecting position ===\n");
 
-    if (recv(sd, buf, strlen(buf), 0) == -1) {
+    if (recv(sd, pos, strlen(pos), 0) == -1) {
         perror("recv");
         exit(1);
     }
 
-    printf("buf : %s \n", buf);
+    printf("pos : %s\n", pos);
 
-    if (buf[0] - '0' == 1) {
+    if (pos[0] - '0' == 1) {
         position = 2;
     }
     else {
@@ -55,12 +56,15 @@ int main(int argc, char* argv[]) {
         switch (position) {
             case 1:
                 gameStatus = attack(sd);
+                sleep(1);
                 break;
             case 2:
                 gameStatus = defence(sd);
+                sleep(1);
                 break;
         }
     }
 
+    close(sd);
     return 0;
 }
